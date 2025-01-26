@@ -27,6 +27,9 @@ public static class Program
 
         serviceCollection.AddTransient<PdfDocument>();
         serviceCollection.AddTransient<PdfMerger>();
+        serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
+        serviceCollection.AddTransient<IPdfReader, PdfReader>();
+        serviceCollection.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
 
         return serviceCollection.BuildServiceProvider();
     }
