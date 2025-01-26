@@ -4,31 +4,34 @@ namespace nmergi;
 
 public class PdfMerger
 {
-    public string OutputFileName { get; }
     private IPdfDocumentWrapper OutputDocumentWrapper { get; }
     private IFileUtilities FileUtilities { get; }
     private IPdfReader PdfReader { get; }
 
+    public string OutputFileName { get; }
+
     public PdfMerger(
         IPdfDocumentWrapper outputDocumentWrapper,
         IPdfReader pdfReader,
-        IFileUtilities fileUtilities,
-        string? outputFileName
+        IFileUtilities fileUtilities
     )
     {
         OutputDocumentWrapper =
             outputDocumentWrapper ?? throw new ArgumentNullException(nameof(outputDocumentWrapper));
         PdfReader = pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
         FileUtilities = fileUtilities ?? throw new ArgumentNullException(nameof(fileUtilities));
-        OutputFileName = outputFileName ?? FileUtilities.GetTempPdfFullFileName("merged");
+        OutputFileName = FileUtilities.GetTempPdfFullFileName("output");
     }
 
-    public void MergePdfs(string[] pdfPaths)
+    public void MergePdfs(IEnumerable<string>? pdfPaths)
     {
-        if (pdfPaths == null || pdfPaths.Length == 0)
+        if (pdfPaths == null)
+            throw new ArgumentException("PDF paths cannot be null.", nameof(pdfPaths));
+        var paths = pdfPaths.ToArray();
+        if (paths.Length == 0)
             throw new ArgumentException("PDF paths cannot be null or empty.", nameof(pdfPaths));
 
-        foreach (var path in pdfPaths)
+        foreach (var path in paths)
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(
