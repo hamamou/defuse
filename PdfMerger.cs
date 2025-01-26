@@ -6,19 +6,24 @@ namespace nmergi;
 
 public class PdfMerger
 {
-    public string OutputFileName { get; } = FileUtilities.GetTempPdfFullFileName("merged");
+    public string OutputFileName { get; }
+    private PdfDocument OutputDocument { get; }
+
+    public PdfMerger(PdfDocument outputDocument)
+    {
+        OutputDocument = outputDocument;
+        OutputFileName = PdfFileUtility.GetTempPdfFullFileName("merged");
+    }
 
     public void MergePdfs(string[] pdfPaths)
     {
-        using var outputDocument = new PdfDocument();
-
         foreach (var path in pdfPaths)
         {
             var filePaths = FileHandler.GetPdfFilePaths(path);
-            AddFileContentToPdf(outputDocument, filePaths);
+            AddFileContentToPdf(OutputDocument, filePaths);
         }
 
-        outputDocument.Save(OutputFileName);
+        OutputDocument.Save(OutputFileName);
         FileUtilities.ShowDocument(OutputFileName);
     }
 
