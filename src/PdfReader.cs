@@ -1,4 +1,3 @@
-using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
 namespace nmergi;

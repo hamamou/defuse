@@ -4,25 +4,27 @@ using PdfSharp.Pdf.IO;
 
 namespace nmergi.Tests;
 
+[TestFixture]
 public class PdfMergerTests
 {
     [Test]
-    public void MergePdfs_ShouldCallFileHandlerAndSavePdf()
+    public void MergePdfs_ShouldMergeAndSavePdf()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
-        var outputDocumentWrapper = new Mock<IPdfDocumentWrapper>();
+        var mockOutputDocument = new Mock<IPdfDocumentWrapper>();
+        var mockPdfReader = new Mock<IPdfReader>();
+
         var inputDocument1 = new PdfDocument();
         inputDocument1.AddPage();
         var inputDocument2 = new PdfDocument();
         inputDocument2.AddPage();
-        var pdfReader = new Mock<IPdfReader>();
 
         var pdfPaths = new[] { "path1" };
         mockFileUtilities
             .Setup(fh => fh.GetPdfFilePaths(It.IsAny<string>()))
-            .Returns<string>(path => new List<string> { $"{path}/file1.pdf", $"{path}/file2.pdf" });
+            .Returns(new List<string> { "path1/file1.pdf", "path1/file2.pdf" });
 
-        pdfReader
+        mockPdfReader
             .SetupSequence(reader =>
                 reader.Open(It.IsAny<string>(), It.IsAny<PdfDocumentOpenMode>())
             )
@@ -30,16 +32,90 @@ public class PdfMergerTests
             .Returns(new PdfDocumentWrapper(inputDocument2));
 
         var pdfMerger = new PdfMerger(
-            outputDocumentWrapper.Object,
-            pdfReader.Object,
+            mockOutputDocument.Object,
+            mockPdfReader.Object,
             mockFileUtilities.Object,
             "output.pdf"
         );
 
+        // Act
         pdfMerger.MergePdfs(pdfPaths);
 
-        outputDocumentWrapper.Verify(odw => odw.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
-        outputDocumentWrapper.Verify(odw => odw.Save(It.IsAny<string>()), Times.Once);
-        mockFileUtilities.Verify(fh => fh.ShowDocument(It.IsAny<string>()), Times.Once);
+        // Assert
+        mockOutputDocument.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
+        mockOutputDocument.Verify(doc => doc.Save("output.pdf"), Times.Once);
+        mockFileUtilities.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
+    }
+
+    [Test]
+    public void MergePdfs_ShouldThrowException_WhenPdfPathsIsNull()
+    {
+        var pdfMerger = new PdfMerger(
+            Mock.Of<IPdfDocumentWrapper>(),
+            Mock.Of<IPdfReader>(),
+            Mock.Of<IFileUtilities>(),
+            "output.pdf"
+        );
+
+        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs(null));
+        Assert.That(ex.Message, Does.Contain("PDF paths cannot be null or empty"));
+    }
+
+    [Test]
+    public void MergePdfs_ShouldThrowException_WhenPdfPathsIsEmpty()
+    {
+        var pdfMerger = new PdfMerger(
+            Mock.Of<IPdfDocumentWrapper>(),
+            Mock.Of<IPdfReader>(),
+            Mock.Of<IFileUtilities>(),
+            "output.pdf"
+        );
+
+        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs([]));
+        Assert.That(ex.Message, Does.Contain("PDF paths cannot be null or empty"));
+    }
+
+    [Test]
+    public void MergePdfs_ShouldThrowException_WhenFilePathIsInvalid()
+    {
+        var mockFileUtilities = new Mock<IFileUtilities>();
+        var pdfMerger = new PdfMerger(
+            Mock.Of<IPdfDocumentWrapper>(),
+            Mock.Of<IPdfReader>(),
+            mockFileUtilities.Object,
+            "output.pdf"
+        );
+
+        mockFileUtilities
+            .Setup(fh => fh.GetPdfFilePaths(It.IsAny<string>()))
+            .Returns(new List<string> { " " });
+
+        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs(["path1"]));
+        Assert.That(ex.Message, Does.Contain("A file path is null or empty"));
+    }
+
+    [Test]
+    public void MergePdfs_ShouldThrowException_WhenInputDocumentIsNull()
+    {
+        var mockFileUtilities = new Mock<IFileUtilities>();
+        var mockPdfReader = new Mock<IPdfReader>();
+
+        mockFileUtilities
+            .Setup(fh => fh.GetPdfFilePaths(It.IsAny<string>()))
+            .Returns(new List<string> { "path1/file1.pdf" });
+
+        mockPdfReader
+            .Setup(reader => reader.Open(It.IsAny<string>(), It.IsAny<PdfDocumentOpenMode>()))
+            .Returns((IPdfDocumentWrapper)null);
+
+        var pdfMerger = new PdfMerger(
+            Mock.Of<IPdfDocumentWrapper>(),
+            mockPdfReader.Object,
+            mockFileUtilities.Object,
+            "output.pdf"
+        );
+
+        var ex = Assert.Throws<InvalidOperationException>(() => pdfMerger.MergePdfs(["path1"]));
+        Assert.That(ex.Message, Does.Contain("Input PDF document at 'path1/file1.pdf' is null"));
     }
 }
