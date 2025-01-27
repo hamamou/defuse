@@ -1,7 +1,3 @@
-Here’s a comprehensive **README.md** for your project:
-
----
-
 # **nmergi**
 
 `nmergi` is a command-line tool for merging multiple PDF files into a single PDF document. It provides a simple interface, robust error handling, and extensibility using Dependency Injection. Powered by the `PdfSharp` library, `nmergi` is designed for developers and power users alike.

@@ -21,31 +21,23 @@ public class Program
         var serviceProvider = ConfigureServices();
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
-        try
+        logger.LogInformation("Starting PDF merge process...");
+        var pdfMerger = serviceProvider.GetRequiredService<PdfMerger>();
+        var result = pdfMerger.MergePdfs(options.InputFiles);
+        if (result.IsFailure)
         {
-            logger.LogInformation("Starting PDF merge process...");
-            var pdfMerger = serviceProvider.GetRequiredService<PdfMerger>();
-            pdfMerger.MergePdfs(options.InputFiles);
-
-            Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputFileName}");
-            logger.LogInformation(
-                "Merged PDF saved as: {OutputFileName}",
-                pdfMerger.OutputFileName
+            logger.LogError(
+                "An error occurred during the PDF merge process: {ErrorMessage}",
+                result.Error
             );
-
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred during the PDF merge process.");
-            Console.Error.WriteLine($"Error: {ex.Message}");
+            Console.Error.WriteLine($"Error: {result.Error}");
             return -1;
         }
-        finally
-        {
-            if (serviceProvider is IDisposable disposable)
-                disposable.Dispose();
-        }
+
+        Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputFileName}");
+        logger.LogInformation("Merged PDF saved as: {OutputFileName}", pdfMerger.OutputFileName);
+
+        return 0;
     }
 
     private static int HandleParseError(IEnumerable<Error> errors)
@@ -53,7 +45,7 @@ public class Program
         var errorArray = errors as Error[] ?? errors.ToArray();
         if (errorArray.Any(e => e is HelpRequestedError or VersionRequestedError))
         {
-            return 0; // Help or version requested - no error.
+            return 0;
         }
 
         return -1;

@@ -1,3 +1,4 @@
+using Bogoware.Monads;
 using PdfSharp.Quality;
 
 namespace nmergi;
@@ -6,7 +7,7 @@ public interface IFileUtilities
 {
     string GetTempPdfFullFileName(string baseFileName);
     void ShowDocument(string filePath);
-    IList<string> GetPdfFilePaths(string path);
+    Result<IList<string>> GetPdfFilePaths(string path);
 }
 
 public class FileUtilities : IFileUtilities
@@ -22,23 +23,28 @@ public class FileUtilities : IFileUtilities
         PdfFileUtility.ShowDocument(filePath);
     }
 
-    public IList<string> GetPdfFilePaths(string path)
+    public Result<IList<string>> GetPdfFilePaths(string path)
     {
         var filePaths = new List<string>();
 
         if (File.Exists(path))
         {
             filePaths.Add(path);
+            return filePaths;
         }
-        else if (Directory.Exists(path))
+        if (Directory.Exists(path))
         {
-            filePaths.AddRange(Directory.GetFiles(path, "*.pdf"));
-        }
-        else
-        {
-            Console.WriteLine($"Invalid file or directory path: {path}");
+            var files = Directory.GetFiles(path, "*.pdf");
+            foreach (var file in files)
+            {
+                if (File.Exists(file))
+                {
+                    filePaths.Add(Path.GetFullPath(file));
+                }
+            }
+            return filePaths;
         }
 
-        return filePaths;
+        return Result.Failure<IList<string>>($"Invalid file or directory path: {path}");
     }
 }

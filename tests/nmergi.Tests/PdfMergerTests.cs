@@ -40,11 +40,14 @@ public class PdfMergerTests
             mockFileUtilities.Object
         );
 
-        pdfMerger.MergePdfs(pdfPaths);
-
-        mockOutputDocument.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
-        mockOutputDocument.Verify(doc => doc.Save("output.pdf"), Times.Once);
-        mockFileUtilities.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
+        var result = pdfMerger.MergePdfs(pdfPaths);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.EqualTo(true));
+            mockOutputDocument.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
+            mockOutputDocument.Verify(doc => doc.Save("output.pdf"), Times.Once);
+            mockFileUtilities.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
+        });
     }
 
     [Test]
@@ -55,9 +58,13 @@ public class PdfMergerTests
             Mock.Of<IPdfReader>(),
             Mock.Of<IFileUtilities>()
         );
-
-        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs(null));
-        Assert.That(ex.Message, Does.Contain("PDF paths cannot be null. (Parameter 'pdfPaths')"));
+        var result = pdfMerger.MergePdfs(null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailure, Is.EqualTo(true));
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(result.Error!.Message, Does.Contain("PDF paths cannot be null. $pdfPaths"));
+        });
     }
 
     [Test]
@@ -68,9 +75,16 @@ public class PdfMergerTests
             Mock.Of<IPdfReader>(),
             Mock.Of<IFileUtilities>()
         );
-
-        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs([]));
-        Assert.That(ex.Message, Does.Contain("PDF paths cannot be null or empty"));
+        var result = pdfMerger.MergePdfs([]);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailure, Is.EqualTo(true));
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(
+                result.Error!.Message,
+                Does.Contain("PDF paths cannot be empty. $pdfPaths")
+            );
+        });
     }
 
     [Test]
@@ -87,8 +101,13 @@ public class PdfMergerTests
             .Setup(fh => fh.GetPdfFilePaths(It.IsAny<string>()))
             .Returns(new List<string> { " " });
 
-        var ex = Assert.Throws<ArgumentException>(() => pdfMerger.MergePdfs(["path1"]));
-        Assert.That(ex.Message, Does.Contain("A file path is null or empty"));
+        var result = pdfMerger.MergePdfs(["path1"]);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailure, Is.EqualTo(true));
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(result.Error!.Message, Does.Contain("A file path is null or empty"));
+        });
     }
 
     [Test]
@@ -103,7 +122,7 @@ public class PdfMergerTests
 
         mockPdfReader
             .Setup(reader => reader.Open(It.IsAny<string>(), It.IsAny<PdfDocumentOpenMode>()))
-            .Returns((IPdfDocumentWrapper)null!);
+            .Returns(Bogoware.Monads.Result.Failure<IPdfDocumentWrapper>("message"));
 
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
@@ -111,7 +130,12 @@ public class PdfMergerTests
             mockFileUtilities.Object
         );
 
-        var ex = Assert.Throws<InvalidOperationException>(() => pdfMerger.MergePdfs(["path1"]));
-        Assert.That(ex.Message, Does.Contain("Input PDF document at 'path1/file1.pdf' is null"));
+        var result = pdfMerger.MergePdfs(["path1"]);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailure, Is.EqualTo(true));
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(result.Error!.Message, Does.Contain("message"));
+        });
     }
 }

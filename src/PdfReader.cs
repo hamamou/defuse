@@ -1,16 +1,26 @@
+using Bogoware.Monads;
 using PdfSharp.Pdf.IO;
 
 namespace nmergi;
 
 public interface IPdfReader
 {
-    IPdfDocumentWrapper Open(string filePath, PdfDocumentOpenMode mode);
+    Result<IPdfDocumentWrapper> Open(string filePath, PdfDocumentOpenMode mode);
 }
 
 public class PdfReader : IPdfReader
 {
-    public IPdfDocumentWrapper Open(string filePath, PdfDocumentOpenMode mode)
+    public Result<IPdfDocumentWrapper> Open(string filePath, PdfDocumentOpenMode mode)
     {
-        return new PdfDocumentWrapper(PdfSharp.Pdf.IO.PdfReader.Open(filePath, mode));
+        try
+        {
+            return new PdfDocumentWrapper(PdfSharp.Pdf.IO.PdfReader.Open(filePath, mode));
+        }
+        catch (Exception e)
+        {
+            return Result.Failure<IPdfDocumentWrapper>(
+                $"An error occurred while opening the PDF file: {e.Message}"
+            );
+        }
     }
 }
