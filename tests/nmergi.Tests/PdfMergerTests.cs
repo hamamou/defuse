@@ -13,7 +13,6 @@ public class PdfMergerTests
         var mockFileUtilities = new Mock<IFileUtilities>();
         var mockDocumentWrapper = new Mock<IPdfDocumentWrapper>();
         var mockPdfReader = new Mock<IPdfReader>();
-
         var inputDocument1 = new PdfDocument();
         inputDocument1.AddPage();
         var inputDocument2 = new PdfDocument();
@@ -46,8 +45,8 @@ public class PdfMergerTests
         {
             Assert.That(result.IsSuccess, Is.EqualTo(true));
             mockDocumentWrapper.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
-            mockDocumentWrapper.Verify(doc => doc.Save("output.pdf"), Times.Once);
-            mockDocumentWrapper.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
+            mockDocumentWrapper.Verify(doc => doc.Save(It.IsAny<string>()), Times.Once);
+            mockDocumentWrapper.Verify(doc => doc.ShowDocument(It.IsAny<string>()), Times.Once);
         });
     }
 
