@@ -58,10 +58,10 @@ public class PdfMerger
         IList<string> pdfFilePaths
     )
     {
-        if (outputDocument == null)
-            throw new ArgumentNullException(nameof(outputDocument));
-        if (pdfFilePaths == null || pdfFilePaths.Count == 0)
-            throw new ArgumentException("No PDF file paths were provided.", nameof(pdfFilePaths));
+        if (pdfFilePaths.Count == 0)
+        {
+            return Result.Failure<bool>("No PDF file paths found.");
+        }
 
         foreach (var filePath in pdfFilePaths)
         {

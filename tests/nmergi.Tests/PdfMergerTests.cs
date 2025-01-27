@@ -51,7 +51,7 @@ public class PdfMergerTests
     }
 
     [Test]
-    public void MergePdfs_ShouldThrowException_WhenPdfPathsIsNull()
+    public void MergePdfs_ShouldReturnError_WhenPdfPathsIsNull()
     {
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
@@ -68,7 +68,7 @@ public class PdfMergerTests
     }
 
     [Test]
-    public void MergePdfs_ShouldThrowException_WhenPdfPathsIsEmpty()
+    public void MergePdfs_ShouldReturnError_WhenPdfPathsIsEmpty()
     {
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
@@ -88,7 +88,7 @@ public class PdfMergerTests
     }
 
     [Test]
-    public void MergePdfs_ShouldThrowException_WhenFilePathIsInvalid()
+    public void MergePdfs_ShouldReturnError_WhenFilePathIsInvalid()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
         var pdfMerger = new PdfMerger(
@@ -111,7 +111,7 @@ public class PdfMergerTests
     }
 
     [Test]
-    public void MergePdfs_ShouldThrowException_WhenInputDocumentIsNull()
+    public void MergePdfs_ShouldReturnError_WhenInputDocumentIsNull()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
         var mockPdfReader = new Mock<IPdfReader>();
