@@ -28,7 +28,10 @@ public class Program
             pdfMerger.MergePdfs(options.InputFiles);
 
             Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputFileName}");
-            logger.LogInformation($"Merged PDF saved as: {pdfMerger.OutputFileName}");
+            logger.LogInformation(
+                "Merged PDF saved as: {OutputFileName}",
+                pdfMerger.OutputFileName
+            );
 
             return 0;
         }
