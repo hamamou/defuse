@@ -5,23 +5,32 @@ namespace nmergi;
 
 public class PdfMerger
 {
-    private IPdfDocumentWrapper OutputDocumentWrapper { get; }
+    private IPdfDocumentWrapper DocumentWrapper { get; }
     private IFileUtilities FileUtilities { get; }
     private IPdfReader PdfReader { get; }
 
-    public string OutputFileName { get; }
+    public string OutputPath { get; }
 
     public PdfMerger(
-        IPdfDocumentWrapper outputDocumentWrapper,
+        IPdfDocumentWrapper documentWrapper,
         IPdfReader pdfReader,
-        IFileUtilities fileUtilities
+        IFileUtilities fileUtilities,
+        string outputPath
     )
     {
-        OutputDocumentWrapper =
-            outputDocumentWrapper ?? throw new ArgumentNullException(nameof(outputDocumentWrapper));
+        DocumentWrapper =
+            documentWrapper ?? throw new ArgumentNullException(nameof(documentWrapper));
         PdfReader = pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
         FileUtilities = fileUtilities ?? throw new ArgumentNullException(nameof(fileUtilities));
-        OutputFileName = FileUtilities.GetTempPdfFullFileName("output");
+        OutputPath =
+            string.IsNullOrWhiteSpace(outputPath) ? FileUtilities.GetTempPdfFullFileName("output")
+            : outputPath.EndsWith(".pdf") ? outputPath
+            : $"{outputPath}.pdf";
+
+        if (!Path.IsPathRooted(OutputPath))
+        {
+            OutputPath = Path.Combine(Path.GetTempPath(), OutputPath);
+        }
     }
 
     public Result<bool> MergePdfs(IEnumerable<string>? pdfPaths)
@@ -41,15 +50,15 @@ public class PdfMerger
             if (pdfFilePathsResult.IsFailure)
                 return Result.Failure<bool>(pdfFilePathsResult.Error!);
 
-            var result = AddFileContentToPdf(OutputDocumentWrapper, pdfFilePathsResult.Value!);
+            var result = AddFileContentToPdf(DocumentWrapper, pdfFilePathsResult.Value!);
             if (result.IsFailure)
             {
                 return Result.Failure<bool>(result.Error!);
             }
         }
 
-        OutputDocumentWrapper.Save(OutputFileName);
-        FileUtilities.ShowDocument(OutputFileName);
+        DocumentWrapper.Save(OutputPath);
+        DocumentWrapper.ShowDocument(OutputPath);
         return true;
     }
 

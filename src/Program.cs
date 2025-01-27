@@ -34,8 +34,8 @@ public class Program
             return -1;
         }
 
-        Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputFileName}");
-        logger.LogInformation("Merged PDF saved as: {OutputFileName}", pdfMerger.OutputFileName);
+        Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputPath}");
+        logger.LogInformation("Merged PDF saved as: {OutputFileName}", pdfMerger.OutputPath);
 
         return 0;
     }
@@ -68,6 +68,7 @@ public class Program
         serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
         serviceCollection.AddTransient<IPdfReader, PdfReader>();
         serviceCollection.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
+        serviceCollection.AddSingleton(DateTime.Now.ToString("yyyyMMddHHmmss"));
 
         return serviceCollection.BuildServiceProvider();
     }

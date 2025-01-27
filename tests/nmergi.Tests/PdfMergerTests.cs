@@ -11,7 +11,7 @@ public class PdfMergerTests
     public void MergePdfs_ShouldMergeAndSavePdf()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
-        var mockOutputDocument = new Mock<IPdfDocumentWrapper>();
+        var mockDocumentWrapper = new Mock<IPdfDocumentWrapper>();
         var mockPdfReader = new Mock<IPdfReader>();
 
         var inputDocument1 = new PdfDocument();
@@ -35,18 +35,19 @@ public class PdfMergerTests
             .Returns(new PdfDocumentWrapper(inputDocument2));
 
         var pdfMerger = new PdfMerger(
-            mockOutputDocument.Object,
+            mockDocumentWrapper.Object,
             mockPdfReader.Object,
-            mockFileUtilities.Object
+            mockFileUtilities.Object,
+            "output"
         );
 
         var result = pdfMerger.MergePdfs(pdfPaths);
         Assert.Multiple(() =>
         {
             Assert.That(result.IsSuccess, Is.EqualTo(true));
-            mockOutputDocument.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
-            mockOutputDocument.Verify(doc => doc.Save("output.pdf"), Times.Once);
-            mockFileUtilities.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
+            mockDocumentWrapper.Verify(doc => doc.AddPage(It.IsAny<PdfPage>()), Times.Exactly(2));
+            mockDocumentWrapper.Verify(doc => doc.Save("output.pdf"), Times.Once);
+            mockDocumentWrapper.Verify(util => util.ShowDocument("output.pdf"), Times.Once);
         });
     }
 
@@ -56,7 +57,8 @@ public class PdfMergerTests
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
-            Mock.Of<IFileUtilities>()
+            Mock.Of<IFileUtilities>(),
+            "output"
         );
         var result = pdfMerger.MergePdfs(null);
         Assert.Multiple(() =>
@@ -73,7 +75,8 @@ public class PdfMergerTests
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
-            Mock.Of<IFileUtilities>()
+            Mock.Of<IFileUtilities>(),
+            "output"
         );
         var result = pdfMerger.MergePdfs([]);
         Assert.Multiple(() =>
@@ -94,7 +97,8 @@ public class PdfMergerTests
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
-            mockFileUtilities.Object
+            mockFileUtilities.Object,
+            "output"
         );
 
         mockFileUtilities
@@ -127,7 +131,8 @@ public class PdfMergerTests
         var pdfMerger = new PdfMerger(
             Mock.Of<IPdfDocumentWrapper>(),
             mockPdfReader.Object,
-            mockFileUtilities.Object
+            mockFileUtilities.Object,
+            "output"
         );
 
         var result = pdfMerger.MergePdfs(["path1"]);

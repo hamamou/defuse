@@ -6,7 +6,6 @@ namespace nmergi;
 public interface IFileUtilities
 {
     string GetTempPdfFullFileName(string baseFileName);
-    void ShowDocument(string filePath);
     Result<IList<string>> GetPdfFilePaths(string path);
 }
 
@@ -15,12 +14,6 @@ public class FileUtilities : IFileUtilities
     public string GetTempPdfFullFileName(string baseFileName)
     {
         return PdfFileUtility.GetTempPdfFullFileName("merged");
-    }
-
-    public void ShowDocument(string filePath)
-    {
-        Console.WriteLine($"Document opened: {filePath}");
-        PdfFileUtility.ShowDocument(filePath);
     }
 
     public Result<IList<string>> GetPdfFilePaths(string path)
