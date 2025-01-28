@@ -1,5 +1,8 @@
+using Defuse.pdf;
+using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using PdfSharp.Pdf;
 using Console = System.Console;
 

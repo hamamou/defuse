@@ -1,4 +1,7 @@
-﻿using Moq;
+﻿using Defuse.pdf;
+using Defuse.Utilities;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 

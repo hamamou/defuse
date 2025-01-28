@@ -1,14 +1,15 @@
-using Bogoware.Monads;
+using Defuse.pdf;
+using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf.IO;
 
-namespace defuse;
+namespace Defuse.pdf;
 
 public interface IPdfReader
 {
     Result<IPdfDocumentWrapper> Open(string filePath, PdfDocumentOpenMode mode);
 }
 
-public class PdfReader : IPdfReader
+public class PdfReader() : IPdfReader
 {
     public Result<IPdfDocumentWrapper> Open(string filePath, PdfDocumentOpenMode mode)
     {

@@ -1,72 +1,46 @@
-﻿using CommandLine;
+﻿using System.CommandLine;
+using Defuse.CommandParser;
+using Defuse.pdf;
+using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 
-namespace defuse;
-
-public class Program
+namespace Defuse
 {
-    public static int Main(string[] args)
+    public class Program
     {
-        Console.Out.WriteLine("");
-        return 0;
-    }
-
-    private static int RunOptionsAndReturnExitCode(Options options)
-    {
-        var serviceProvider = ConfigureServices();
-        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-
-        logger.LogInformation("Starting PDF merge process...");
-        var pdfMerger = serviceProvider.GetRequiredService<PdfMerger>();
-        var result = pdfMerger.MergePdfs(options.InputFiles);
-        if (result.IsFailure)
+        static async Task<int> Main(string[] args)
         {
-            logger.LogError(
-                "An error occurred during the PDF merge process: {ErrorMessage}",
-                result.Error
-            );
-            Console.Error.WriteLine($"Error: {result.Error}");
-            return -1;
+            var serviceProvider = ConfigureServices();
+            var commandParser = new Parser(serviceProvider);
+
+            var rootCommand = new RootCommand("defuse: A simple PDF utility tool")
+            {
+                commandParser.CreateMergeCommand(),
+            };
+
+            return await rootCommand.InvokeAsync(args);
         }
 
-        Console.WriteLine($"Merged PDF saved as: {pdfMerger.OutputPath}");
-        logger.LogInformation("Merged PDF saved as: {OutputFileName}", pdfMerger.OutputPath);
-
-        return 0;
-    }
-
-    private static int HandleParseError(IEnumerable<Error> errors)
-    {
-        var errorArray = errors as Error[] ?? errors.ToArray();
-        if (errorArray.Any(e => e is HelpRequestedError or VersionRequestedError))
+        private static ServiceProvider ConfigureServices(string? outputPath = null)
         {
-            return 0;
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging(config =>
+            {
+                config.AddConsole();
+                config.SetMinimumLevel(LogLevel.Information);
+            });
+
+            serviceCollection.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
+            serviceCollection.AddTransient<PdfDocument>();
+            serviceCollection.AddTransient<PdfMerger>();
+            serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
+            serviceCollection.AddTransient<IPdfReader, PdfReader>();
+            serviceCollection.AddSingleton(outputPath ?? DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+            return serviceCollection.BuildServiceProvider();
         }
-
-        return -1;
-    }
-
-    private static ServiceProvider ConfigureServices()
-    {
-        var serviceCollection = new ServiceCollection();
-
-        // Add logging
-        serviceCollection.AddLogging(config =>
-        {
-            config.AddConsole();
-            config.SetMinimumLevel(LogLevel.Information);
-        });
-
-        // Register application services
-        serviceCollection.AddTransient<PdfDocument>();
-        serviceCollection.AddTransient<PdfMerger>();
-        serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
-        serviceCollection.AddTransient<IPdfReader, PdfReader>();
-        serviceCollection.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
-        serviceCollection.AddSingleton(DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-        return serviceCollection.BuildServiceProvider();
     }
 }

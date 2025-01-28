@@ -1,7 +1,8 @@
+using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 using PdfSharp.Quality;
 
-namespace defuse;
+namespace Defuse.pdf;
 
 public interface IPdfDocumentWrapper
 {

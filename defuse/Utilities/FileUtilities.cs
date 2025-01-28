@@ -1,7 +1,6 @@
-using Bogoware.Monads;
 using PdfSharp.Quality;
 
-namespace defuse;
+namespace Defuse.Utilities;
 
 public interface IFileUtilities
 {

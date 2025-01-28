@@ -1,7 +1,7 @@
-using Bogoware.Monads;
+using Defuse.Utilities;
 using PdfSharp.Pdf.IO;
 
-namespace defuse;
+namespace Defuse.pdf;
 
 public class PdfMerger
 {
