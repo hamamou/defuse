@@ -2,7 +2,7 @@
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
-namespace nmergi.Tests;
+namespace defuse.Tests;
 
 [TestFixture]
 public class PdfMergerTests

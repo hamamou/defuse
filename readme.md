@@ -1,6 +1,6 @@
-# **nmergi**
+# **defuse**
 
-`nmergi` is a command-line tool for merging multiple PDF files into a single PDF document. It provides a simple interface, robust error handling, and extensibility using Dependency Injection. Powered by the `PdfSharp` library, `nmergi` is designed for developers and power users alike.
+`defuse` is a command-line tool for merging multiple PDF files into a single PDF document. It provides a simple interface, robust error handling, and extensibility using Dependency Injection. Powered by the `PdfSharp` library, `defuse` is designed for developers and power users alike.
 
 ---
 
@@ -21,8 +21,8 @@
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/nmergi.git
-    cd nmergi
+    git clone https://github.com/hamamou/defuse.git
+    cd defuse
     ```
 2. Restore dependencies:
 

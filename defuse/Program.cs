@@ -3,17 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 
-namespace nmergi;
+namespace defuse;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        var result = Parser
-            .Default.ParseArguments<Options>(args)
-            .MapResult(RunOptionsAndReturnExitCode, HandleParseError);
-
-        Environment.Exit(result);
+        Console.Out.WriteLine("");
+        return 0;
     }
 
     private static int RunOptionsAndReturnExitCode(Options options)

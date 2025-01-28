@@ -1,4 +1,4 @@
-namespace nmergi.Tests;
+namespace defuse.Tests;
 
 public class Utils
 {
@@ -8,8 +8,8 @@ public class Utils
 
         // Traverse upwards until we find the .csproj or .sln file
         while (
-            !File.Exists(Path.Combine(currentDirectory, "nmergi.csproj"))
-            && !File.Exists(Path.Combine(currentDirectory, "nmergi.sln"))
+            !File.Exists(Path.Combine(currentDirectory, "defuse.csproj"))
+            && !File.Exists(Path.Combine(currentDirectory, "defuse.sln"))
         )
         {
             currentDirectory = Directory.GetParent(currentDirectory)?.FullName;

@@ -1,7 +1,7 @@
 using Bogoware.Monads;
 using PdfSharp.Quality;
 
-namespace nmergi;
+namespace defuse;
 
 public interface IFileUtilities
 {

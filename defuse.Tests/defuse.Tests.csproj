@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\nmergi.csproj" />
+      <ProjectReference Include="..\defuse\defuse.csproj" />
     </ItemGroup>
 
     <ItemGroup>

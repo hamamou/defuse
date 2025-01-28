@@ -1,7 +1,7 @@
 using PdfSharp.Pdf;
 using PdfSharp.Quality;
 
-namespace nmergi;
+namespace defuse;
 
 public interface IPdfDocumentWrapper
 {

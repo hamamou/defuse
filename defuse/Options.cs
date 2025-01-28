@@ -1,7 +1,7 @@
 using CommandLine;
 using CommandLine.Text;
 
-namespace nmergi;
+namespace defuse;
 
 public class Options
 {
@@ -13,7 +13,7 @@ public class Options
     )]
     public required IEnumerable<string> InputFiles { get; init; }
 
-    [Usage(ApplicationAlias = "nmergi")]
+    [Usage(ApplicationAlias = "defuse")]
     // ReSharper disable once UnusedMember.Global
     public static IEnumerable<Example> Examples =>
         new List<Example>

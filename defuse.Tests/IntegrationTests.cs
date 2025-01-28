@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 using Console = System.Console;
 
-namespace nmergi.Tests;
+namespace defuse.Tests;
 
 public class IntegrationTests
 {

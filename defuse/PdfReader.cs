@@ -1,7 +1,7 @@
 using Bogoware.Monads;
 using PdfSharp.Pdf.IO;
 
-namespace nmergi;
+namespace defuse;
 
 public interface IPdfReader
 {
