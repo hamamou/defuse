@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using Defuse.CommandParser;
+using Defuse.Merge;
 using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
-﻿using Defuse.pdf;
+﻿using Defuse.Merge;
+using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;

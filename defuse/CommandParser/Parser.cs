@@ -1,5 +1,5 @@
 using System.CommandLine;
-using Defuse.pdf;
+using Defuse.Merge;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +21,10 @@ namespace Defuse.CommandParser
                 IsRequired = true,
                 AllowMultipleArgumentsPerToken = true,
             };
+            inputOption.AddAlias("-i");
 
             var outputOption = new Option<string>("--output", "Output file name");
+            outputOption.AddAlias("-o");
 
             var mergeCommand = new Command("merge", "Merge multiple PDF files into one")
             {

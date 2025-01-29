@@ -1,7 +1,8 @@
+using Defuse.pdf;
 using Defuse.Utilities;
 using PdfSharp.Pdf.IO;
 
-namespace Defuse.pdf;
+namespace Defuse.Merge;
 
 public class PdfMerger
 {
