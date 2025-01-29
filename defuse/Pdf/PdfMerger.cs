@@ -14,22 +14,17 @@ public class PdfMerger
     public PdfMerger(
         IPdfDocumentWrapper documentWrapper,
         IPdfReader pdfReader,
-        IFileUtilities fileUtilities,
-        string outputPath
+        IFileUtilities fileUtilities
     )
     {
         DocumentWrapper =
             documentWrapper ?? throw new ArgumentNullException(nameof(documentWrapper));
         PdfReader = pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
         FileUtilities = fileUtilities ?? throw new ArgumentNullException(nameof(fileUtilities));
-        OutputPath =
-            string.IsNullOrWhiteSpace(outputPath) ? FileUtilities.GetTempPdfFullFileName("output")
-            : outputPath.EndsWith(".pdf") ? outputPath
-            : $"{outputPath}.pdf";
 
         if (!Path.IsPathRooted(OutputPath))
         {
-            OutputPath = Path.Combine(Path.GetTempPath(), OutputPath);
+            OutputPath = Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
         }
     }
 

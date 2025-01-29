@@ -38,7 +38,6 @@ namespace Defuse
             serviceCollection.AddTransient<PdfMerger>();
             serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
             serviceCollection.AddTransient<IPdfReader, PdfReader>();
-            serviceCollection.AddSingleton(outputPath ?? DateTime.Now.ToString("yyyyMMddHHmmss"));
 
             return serviceCollection.BuildServiceProvider();
         }
