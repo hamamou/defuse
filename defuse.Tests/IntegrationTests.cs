@@ -1,3 +1,4 @@
+using Defuse.Merge;
 using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;

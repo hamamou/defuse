@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using Defuse.CommandParser;
+using Defuse.Merge;
 using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ namespace Defuse
 {
     public class Program
     {
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             var serviceProvider = ConfigureServices();
             var commandParser = new Parser(serviceProvider);
@@ -23,7 +24,7 @@ namespace Defuse
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static ServiceProvider ConfigureServices(string? outputPath = null)
+        private static ServiceProvider ConfigureServices()
         {
             var serviceCollection = new ServiceCollection();
 
