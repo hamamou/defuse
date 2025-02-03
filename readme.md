@@ -65,9 +65,10 @@ dotnet run -- --help
 
 ### **Options**
 
-| Option        | Description                                             | Required |
-| ------------- | ------------------------------------------------------- | -------- |
-| `-i, --input` | Paths to input PDF files or directories containing PDFs | Yes      |
+| Option         | Description                                             | Required |
+| -------------- | ------------------------------------------------------- | -------- |
+| `-i, --input`  | Paths to input PDF files or directories containing PDFs | Yes      |
+| `-o, --output` | Path to the output PDF file                             | No       |
 
 ---
 

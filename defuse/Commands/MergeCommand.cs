@@ -21,7 +21,16 @@ public class MergeCommand(
     private string? OutputPath { get; set; }
 
     [Command("merge")]
-    public async Task<Result<bool>> MergePdfs(IEnumerable<string> input, string? output = null)
+    public async Task<Result<bool>> MergePdfs(
+        [Option("input", ['i'], Description = "The paths of the PDF files to merge.")]
+            IEnumerable<string> input,
+        [Option(
+            "output",
+            ['o'],
+            Description = "The path of the output PDF file. If not specified, a file will be created in the temp directory."
+        )]
+            string? output = null
+    )
     {
         OutputPath =
             output
