@@ -3,9 +3,9 @@ using Defuse.pdf;
 using Defuse.Utilities;
 using PdfSharp.Pdf.IO;
 
-namespace Defuse.Merge;
+namespace Defuse.Commands;
 
-public class PdfMerger(
+public class Merge(
     IPdfDocumentWrapper documentWrapper,
     IPdfReader pdfReader,
     IFileUtilities fileUtilities
@@ -26,21 +26,21 @@ public class PdfMerger(
         OutputPath = output ?? Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
         var paths = input.ToArray();
         if (paths.Length == 0)
-            return Result.Failure<bool>($"PDF paths cannot be empty. ${nameof(input)}");
+            return $"PDF paths cannot be empty. ${nameof(input)}";
 
         foreach (var path in paths)
         {
             if (string.IsNullOrWhiteSpace(path))
-                return Result.Failure<bool>($"A file path is null or empty. ${nameof(input)}");
+                return $"A file path is null or empty. ${nameof(input)}";
 
             var pdfFilePathsResult = FileUtilities.GetPdfFilePaths(path);
             if (pdfFilePathsResult.IsFailure)
-                return Result.Failure<bool>(pdfFilePathsResult.Error!);
+                return pdfFilePathsResult.Error!;
 
             var result = AddFileContentToPdf(DocumentWrapper, pdfFilePathsResult.Value!);
             if (result.IsFailure)
             {
-                return Result.Failure<bool>(result.Error!);
+                return result.Error!;
             }
         }
 
@@ -56,27 +56,25 @@ public class PdfMerger(
     {
         if (pdfFilePaths.Count == 0)
         {
-            return Result.Failure<bool>("No PDF file paths found.");
+            return "No PDF file paths found.";
         }
 
         foreach (var filePath in pdfFilePaths)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                return Result.Failure<bool>(
-                    $"A file path is null or empty. ${nameof(pdfFilePaths)}"
-                );
+                return $"A file path is null or empty. ${nameof(pdfFilePaths)}";
             }
 
             var result = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
             if (result.IsFailure)
             {
-                return Result.Failure<bool>(result.Error!);
+                return result.Error!;
             }
             var inputDocument = result.Value;
             if (inputDocument == null || inputDocument.PageCount == 0)
             {
-                return Result.Failure<bool>($"No pages found in document '{filePath}'.");
+                return $"No pages found in document '{filePath}'.";
             }
 
             for (var i = 0; i < inputDocument.PageCount; i++)
@@ -84,7 +82,7 @@ public class PdfMerger(
                 var page = inputDocument.Pages?[i];
                 if (page == null)
                 {
-                    return Result.Failure<bool>($"Page {i} not found in document '{filePath}'.");
+                    return $"Page {i} not found in document '{filePath}'.";
                 }
 
                 outputDocument.AddPage(page);

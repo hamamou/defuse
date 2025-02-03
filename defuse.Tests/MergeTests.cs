@@ -1,7 +1,6 @@
-﻿using Defuse.Merge;
+﻿using Defuse.Commands;
 using Defuse.pdf;
 using Defuse.Utilities;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
@@ -9,7 +8,7 @@ using PdfSharp.Pdf.IO;
 namespace defuse.Tests;
 
 [TestFixture]
-public class PdfMergerTests
+public class MergeTests
 {
     [Test]
     public async Task MergePdfs_ShouldMergeAndSavePdf()
@@ -37,7 +36,7 @@ public class PdfMergerTests
             .Returns(new PdfDocumentWrapper(inputDocument1))
             .Returns(new PdfDocumentWrapper(inputDocument2));
 
-        var pdfMerger = new PdfMerger(
+        var pdfMerger = new Merge(
             mockDocumentWrapper.Object,
             mockPdfReader.Object,
             mockFileUtilities.Object
@@ -56,7 +55,7 @@ public class PdfMergerTests
     [Test]
     public async Task MergePdfs_ShouldReturnError_WhenPdfPathsIsEmpty()
     {
-        var pdfMerger = new PdfMerger(
+        var pdfMerger = new Merge(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
             Mock.Of<IFileUtilities>()
@@ -66,7 +65,7 @@ public class PdfMergerTests
         {
             Assert.That(result.IsFailure, Is.EqualTo(true));
             Assert.That(result.Error, Is.Not.Null);
-            Assert.That(result.Error!.Message, Does.Contain("PDF paths cannot be empty. $input"));
+            Assert.That(result.Error, Does.Contain("PDF paths cannot be empty. $input"));
         });
     }
 
@@ -74,7 +73,7 @@ public class PdfMergerTests
     public async Task MergePdfs_ShouldReturnError_WhenFilePathIsInvalid()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
-        var pdfMerger = new PdfMerger(
+        var pdfMerger = new Merge(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
             mockFileUtilities.Object
@@ -89,7 +88,7 @@ public class PdfMergerTests
         {
             Assert.That(result.IsFailure, Is.EqualTo(true));
             Assert.That(result.Error, Is.Not.Null);
-            Assert.That(result.Error!.Message, Does.Contain("A file path is null or empty"));
+            Assert.That(result.Error, Does.Contain("A file path is null or empty"));
         });
     }
 
@@ -105,9 +104,9 @@ public class PdfMergerTests
 
         mockPdfReader
             .Setup(reader => reader.Open(It.IsAny<string>(), It.IsAny<PdfDocumentOpenMode>()))
-            .Returns(Bogoware.Monads.Result.Failure<IPdfDocumentWrapper>("message"));
+            .Returns(Defuse.Monads.Result.Failure<IPdfDocumentWrapper>("message")!);
 
-        var pdfMerger = new PdfMerger(
+        var pdfMerger = new Merge(
             Mock.Of<IPdfDocumentWrapper>(),
             mockPdfReader.Object,
             mockFileUtilities.Object
@@ -118,7 +117,7 @@ public class PdfMergerTests
         {
             Assert.That(result.IsFailure, Is.EqualTo(true));
             Assert.That(result.Error, Is.Not.Null);
-            Assert.That(result.Error!.Message, Does.Contain("message"));
+            Assert.That(result.Error, Does.Contain("message"));
         });
     }
 }

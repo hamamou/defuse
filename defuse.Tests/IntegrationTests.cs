@@ -1,9 +1,8 @@
-using Defuse.Merge;
+using Defuse.Commands;
 using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using PdfSharp.Pdf;
 using Console = System.Console;
 
@@ -22,7 +21,7 @@ public class IntegrationTests
     [Test]
     public async Task Run()
     {
-        var pdfMerger = _serviceProvider.GetRequiredService<PdfMerger>();
+        var pdfMerger = _serviceProvider.GetRequiredService<Merge>();
         var filePaths = new[] { "Assets/Doc1.pdf", "Assets/Doc2.pdf" };
 
         var mergeResult = await pdfMerger.MergePdfs(filePaths);
@@ -57,7 +56,7 @@ public class IntegrationTests
         serviceCollection.AddTransient(_ => pdfDocument);
 
         // Add application services
-        serviceCollection.AddTransient<PdfMerger>();
+        serviceCollection.AddTransient<Merge>();
         serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
         serviceCollection.AddTransient<IPdfReader, PdfReader>();
 

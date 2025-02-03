@@ -1,6 +1,6 @@
 ﻿using Cocona;
 using Cocona.Builder;
-using Defuse.Merge;
+using Defuse.Commands;
 using Defuse.pdf;
 using Defuse.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +12,7 @@ AddLogging(builder);
 ConfigureServices(builder);
 
 var app = builder.Build();
-app.AddCommands<PdfMerger>();
+app.AddCommands<Merge>();
 
 app.Run();
 return;
@@ -21,7 +21,7 @@ static void ConfigureServices(CoconaAppBuilder appBuilder)
 {
     appBuilder.Services.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
     appBuilder.Services.AddTransient<PdfDocument>();
-    appBuilder.Services.AddTransient<PdfMerger>();
+    appBuilder.Services.AddTransient<Merge>();
     appBuilder.Services.AddTransient<IFileUtilities, FileUtilities>();
     appBuilder.Services.AddTransient<IPdfReader, PdfReader>();
 }

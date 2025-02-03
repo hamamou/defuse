@@ -1,1 +1,1 @@
-global using Bogoware.Monads;
+global using Defuse.Monads;
