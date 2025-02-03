@@ -17,7 +17,7 @@ public class PdfMerger(
     private IPdfReader PdfReader { get; } =
         pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
 
-    public string? OutputPath { get; private set; }
+    private string? OutputPath { get; set; }
 
     public Result<bool> MergePdfs(IEnumerable<string>? pdfPaths, string? output = null)
     {

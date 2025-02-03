@@ -22,9 +22,19 @@ var app = builder.Build();
 
 app.AddCommand(
     "merge",
-    (string[] files, string? output) =>
+    (string[] input, string? output) =>
     {
         var merge = app.Services.GetRequiredService<PdfMerger>();
-        merge.MergePdfs(files, output);
+        var result = merge.MergePdfs(input, output);
+        if (result.IsFailure)
+        {
+            app.Logger.LogError(result.Error?.Message);
+        }
+        else
+        {
+            app.Logger.LogInformation("PDFs merged successfully.");
+        }
     }
 );
+
+app.Run();
