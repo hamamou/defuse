@@ -12,7 +12,7 @@ AddLogging(builder);
 ConfigureServices(builder);
 
 var app = builder.Build();
-app.AddCommands<Merge>();
+app.AddCommands<MergeCommand>();
 
 app.Run();
 return;
@@ -21,7 +21,7 @@ static void ConfigureServices(CoconaAppBuilder appBuilder)
 {
     appBuilder.Services.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
     appBuilder.Services.AddTransient<PdfDocument>();
-    appBuilder.Services.AddTransient<Merge>();
+    appBuilder.Services.AddTransient<MergeCommand>();
     appBuilder.Services.AddTransient<IFileUtilities, FileUtilities>();
     appBuilder.Services.AddTransient<IPdfReader, PdfReader>();
 }

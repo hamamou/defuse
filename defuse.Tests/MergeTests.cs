@@ -36,7 +36,7 @@ public class MergeTests
             .Returns(new PdfDocumentWrapper(inputDocument1))
             .Returns(new PdfDocumentWrapper(inputDocument2));
 
-        var pdfMerger = new Merge(
+        var pdfMerger = new MergeCommand(
             mockDocumentWrapper.Object,
             mockPdfReader.Object,
             mockFileUtilities.Object
@@ -55,7 +55,7 @@ public class MergeTests
     [Test]
     public async Task MergePdfs_ShouldReturnError_WhenPdfPathsIsEmpty()
     {
-        var pdfMerger = new Merge(
+        var pdfMerger = new MergeCommand(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
             Mock.Of<IFileUtilities>()
@@ -73,7 +73,7 @@ public class MergeTests
     public async Task MergePdfs_ShouldReturnError_WhenFilePathIsInvalid()
     {
         var mockFileUtilities = new Mock<IFileUtilities>();
-        var pdfMerger = new Merge(
+        var pdfMerger = new MergeCommand(
             Mock.Of<IPdfDocumentWrapper>(),
             Mock.Of<IPdfReader>(),
             mockFileUtilities.Object
@@ -106,7 +106,7 @@ public class MergeTests
             .Setup(reader => reader.Open(It.IsAny<string>(), It.IsAny<PdfDocumentOpenMode>()))
             .Returns(Defuse.Monads.Result.Failure<IPdfDocumentWrapper>("message")!);
 
-        var pdfMerger = new Merge(
+        var pdfMerger = new MergeCommand(
             Mock.Of<IPdfDocumentWrapper>(),
             mockPdfReader.Object,
             mockFileUtilities.Object

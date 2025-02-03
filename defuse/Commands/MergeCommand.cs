@@ -5,7 +5,7 @@ using PdfSharp.Pdf.IO;
 
 namespace Defuse.Commands;
 
-public class Merge(
+public class MergeCommand(
     IPdfDocumentWrapper documentWrapper,
     IPdfReader pdfReader,
     IFileUtilities fileUtilities
@@ -23,7 +23,12 @@ public class Merge(
     [Command("merge")]
     public async Task<Result<bool>> MergePdfs(IEnumerable<string> input, string? output = null)
     {
-        OutputPath = output ?? Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
+        OutputPath =
+            output
+            ?? Path.Combine(
+                Path.GetTempPath(),
+                OutputPath ?? DateTime.Now.ToString("yyyyMMddHHmmss") + ".pdf"
+            );
         var paths = input.ToArray();
         if (paths.Length == 0)
             return $"PDF paths cannot be empty. ${nameof(input)}";

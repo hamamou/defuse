@@ -21,7 +21,7 @@ public class IntegrationTests
     [Test]
     public async Task Run()
     {
-        var pdfMerger = _serviceProvider.GetRequiredService<Merge>();
+        var pdfMerger = _serviceProvider.GetRequiredService<MergeCommand>();
         var filePaths = new[] { "Assets/Doc1.pdf", "Assets/Doc2.pdf" };
 
         var mergeResult = await pdfMerger.MergePdfs(filePaths);
@@ -56,7 +56,7 @@ public class IntegrationTests
         serviceCollection.AddTransient(_ => pdfDocument);
 
         // Add application services
-        serviceCollection.AddTransient<Merge>();
+        serviceCollection.AddTransient<MergeCommand>();
         serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
         serviceCollection.AddTransient<IPdfReader, PdfReader>();
 
