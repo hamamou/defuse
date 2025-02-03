@@ -4,33 +4,24 @@ using PdfSharp.Pdf.IO;
 
 namespace Defuse.Merge;
 
-public class PdfMerger
+public class PdfMerger(
+    IPdfDocumentWrapper documentWrapper,
+    IPdfReader pdfReader,
+    IFileUtilities fileUtilities
+)
 {
-    private IPdfDocumentWrapper DocumentWrapper { get; }
-    private IFileUtilities FileUtilities { get; }
-    private IPdfReader PdfReader { get; }
+    private IPdfDocumentWrapper DocumentWrapper { get; } =
+        documentWrapper ?? throw new ArgumentNullException(nameof(documentWrapper));
+    private IFileUtilities FileUtilities { get; } =
+        fileUtilities ?? throw new ArgumentNullException(nameof(fileUtilities));
+    private IPdfReader PdfReader { get; } =
+        pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
 
-    public string OutputPath { get; }
+    public string? OutputPath { get; private set; }
 
-    public PdfMerger(
-        IPdfDocumentWrapper documentWrapper,
-        IPdfReader pdfReader,
-        IFileUtilities fileUtilities
-    )
+    public Result<bool> MergePdfs(IEnumerable<string>? pdfPaths, string? output = null)
     {
-        DocumentWrapper =
-            documentWrapper ?? throw new ArgumentNullException(nameof(documentWrapper));
-        PdfReader = pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
-        FileUtilities = fileUtilities ?? throw new ArgumentNullException(nameof(fileUtilities));
-
-        if (!Path.IsPathRooted(OutputPath))
-        {
-            OutputPath = Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
-        }
-    }
-
-    public Result<bool> MergePdfs(IEnumerable<string>? pdfPaths)
-    {
+        OutputPath = output ?? Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
         if (pdfPaths == null)
             return Result.Failure<bool>($"PDF paths cannot be null. ${nameof(pdfPaths)}");
         var paths = pdfPaths.ToArray();

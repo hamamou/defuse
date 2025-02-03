@@ -1,5 +1,4 @@
-﻿using System.CommandLine;
-using Defuse.CommandParser;
+﻿using Cocona;
 using Defuse.Merge;
 using Defuse.pdf;
 using Defuse.Utilities;
@@ -7,40 +6,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 
-namespace Defuse
+var builder = CoconaApp.CreateBuilder();
+builder.Services.AddLogging(config =>
 {
-    public class Program
+    config.AddConsole();
+    config.SetMinimumLevel(LogLevel.Information);
+});
+
+builder.Services.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
+builder.Services.AddTransient<PdfDocument>();
+builder.Services.AddTransient<PdfMerger>();
+builder.Services.AddTransient<IFileUtilities, FileUtilities>();
+builder.Services.AddTransient<IPdfReader, PdfReader>();
+var app = builder.Build();
+
+app.AddCommand(
+    "merge",
+    (string[] files, string? output) =>
     {
-        private static async Task<int> Main(string[] args)
-        {
-            var serviceProvider = ConfigureServices();
-            var commandParser = new Parser(serviceProvider);
-
-            var rootCommand = new RootCommand("defuse: A simple PDF utility tool")
-            {
-                commandParser.CreateMergeCommand(),
-            };
-
-            return await rootCommand.InvokeAsync(args);
-        }
-
-        private static ServiceProvider ConfigureServices()
-        {
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddLogging(config =>
-            {
-                config.AddConsole();
-                config.SetMinimumLevel(LogLevel.Information);
-            });
-
-            serviceCollection.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
-            serviceCollection.AddTransient<PdfDocument>();
-            serviceCollection.AddTransient<PdfMerger>();
-            serviceCollection.AddTransient<IFileUtilities, FileUtilities>();
-            serviceCollection.AddTransient<IPdfReader, PdfReader>();
-
-            return serviceCollection.BuildServiceProvider();
-        }
+        var merge = app.Services.GetRequiredService<PdfMerger>();
+        merge.MergePdfs(files, output);
     }
-}
+);
