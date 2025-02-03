@@ -20,12 +20,12 @@ public class IntegrationTests
     }
 
     [Test]
-    public void Run()
+    public async Task Run()
     {
         var pdfMerger = _serviceProvider.GetRequiredService<PdfMerger>();
         var filePaths = new[] { "Assets/Doc1.pdf", "Assets/Doc2.pdf" };
 
-        var mergeResult = pdfMerger.MergePdfs(filePaths);
+        var mergeResult = await pdfMerger.MergePdfs(filePaths);
 
         Assert.That(mergeResult.IsSuccess, Is.True, "PDF merging failed!");
 
@@ -76,9 +76,10 @@ public class IntegrationTests
     // Custom Test PdfDocumentWrapper Implementation
     private class PdfDocumentWrapperTest(PdfDocument pdfDocument) : PdfDocumentWrapper(pdfDocument)
     {
-        public override void Save(string path)
+        public override Task SaveAsync(string path)
         {
             Console.Out.WriteLine($"Simulated save: {path}");
+            return Task.CompletedTask;
         }
 
         public override void ShowDocument(string filePath)

@@ -1,4 +1,5 @@
 ﻿using Cocona;
+using Cocona.Builder;
 using Defuse.Merge;
 using Defuse.pdf;
 using Defuse.Utilities;
@@ -7,34 +8,29 @@ using Microsoft.Extensions.Logging;
 using PdfSharp.Pdf;
 
 var builder = CoconaApp.CreateBuilder();
-builder.Services.AddLogging(config =>
-{
-    config.AddConsole();
-    config.SetMinimumLevel(LogLevel.Information);
-});
+AddLogging(builder);
+ConfigureServices(builder);
 
-builder.Services.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
-builder.Services.AddTransient<PdfDocument>();
-builder.Services.AddTransient<PdfMerger>();
-builder.Services.AddTransient<IFileUtilities, FileUtilities>();
-builder.Services.AddTransient<IPdfReader, PdfReader>();
 var app = builder.Build();
-
-app.AddCommand(
-    "merge",
-    (string[] input, string? output) =>
-    {
-        var merge = app.Services.GetRequiredService<PdfMerger>();
-        var result = merge.MergePdfs(input, output);
-        if (result.IsFailure)
-        {
-            app.Logger.LogError(result.Error?.Message);
-        }
-        else
-        {
-            app.Logger.LogInformation("PDFs merged successfully.");
-        }
-    }
-);
+app.AddCommands<PdfMerger>();
 
 app.Run();
+return;
+
+static void ConfigureServices(CoconaAppBuilder appBuilder)
+{
+    appBuilder.Services.AddTransient<IPdfDocumentWrapper, PdfDocumentWrapper>();
+    appBuilder.Services.AddTransient<PdfDocument>();
+    appBuilder.Services.AddTransient<PdfMerger>();
+    appBuilder.Services.AddTransient<IFileUtilities, FileUtilities>();
+    appBuilder.Services.AddTransient<IPdfReader, PdfReader>();
+}
+
+static void AddLogging(CoconaAppBuilder appBuilder)
+{
+    appBuilder.Services.AddLogging(config =>
+    {
+        config.AddConsole();
+        config.SetMinimumLevel(LogLevel.Information);
+    });
+}

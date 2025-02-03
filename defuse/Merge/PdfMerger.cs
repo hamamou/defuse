@@ -1,3 +1,4 @@
+using Cocona;
 using Defuse.pdf;
 using Defuse.Utilities;
 using PdfSharp.Pdf.IO;
@@ -19,19 +20,18 @@ public class PdfMerger(
 
     private string? OutputPath { get; set; }
 
-    public Result<bool> MergePdfs(IEnumerable<string>? pdfPaths, string? output = null)
+    [Command("merge")]
+    public async Task<Result<bool>> MergePdfs(IEnumerable<string> input, string? output = null)
     {
         OutputPath = output ?? Path.Combine(Path.GetTempPath(), OutputPath ?? "output.pdf");
-        if (pdfPaths == null)
-            return Result.Failure<bool>($"PDF paths cannot be null. ${nameof(pdfPaths)}");
-        var paths = pdfPaths.ToArray();
+        var paths = input.ToArray();
         if (paths.Length == 0)
-            return Result.Failure<bool>($"PDF paths cannot be empty. ${nameof(pdfPaths)}");
+            return Result.Failure<bool>($"PDF paths cannot be empty. ${nameof(input)}");
 
         foreach (var path in paths)
         {
             if (string.IsNullOrWhiteSpace(path))
-                return Result.Failure<bool>($"A file path is null or empty. ${nameof(pdfPaths)}");
+                return Result.Failure<bool>($"A file path is null or empty. ${nameof(input)}");
 
             var pdfFilePathsResult = FileUtilities.GetPdfFilePaths(path);
             if (pdfFilePathsResult.IsFailure)
@@ -44,7 +44,7 @@ public class PdfMerger(
             }
         }
 
-        DocumentWrapper.Save(OutputPath);
+        await DocumentWrapper.SaveAsync(OutputPath);
         DocumentWrapper.ShowDocument(OutputPath);
         return true;
     }

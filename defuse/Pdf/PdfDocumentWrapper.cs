@@ -7,7 +7,7 @@ namespace Defuse.pdf;
 public interface IPdfDocumentWrapper
 {
     void AddPage(PdfPage? page);
-    void Save(string fileName);
+    Task SaveAsync(string fileName);
     int PageCount { get; }
     public PdfPages? Pages { get; }
     void ShowDocument(string filePath);
@@ -22,9 +22,9 @@ public class PdfDocumentWrapper(PdfDocument pdfDocument) : IPdfDocumentWrapper
             pdfDocument.AddPage(page);
     }
 
-    public virtual void Save(string fileName)
+    public virtual async Task SaveAsync(string fileName)
     {
-        pdfDocument.Save(fileName);
+        await pdfDocument.SaveAsync(fileName);
     }
 
     public virtual void ShowDocument(string filePath)
