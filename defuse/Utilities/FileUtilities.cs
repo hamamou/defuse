@@ -37,6 +37,6 @@ public class FileUtilities : IFileUtilities
             return filePaths;
         }
 
-        return Result.Failure<IList<string>>($"Invalid file or directory path: {path}");
+        return $"Invalid file or directory path: {path}";
     }
 }

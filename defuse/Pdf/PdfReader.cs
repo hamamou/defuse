@@ -19,9 +19,7 @@ public class PdfReader() : IPdfReader
         }
         catch (Exception e)
         {
-            return Result.Failure<IPdfDocumentWrapper>(
-                $"An error occurred while opening the PDF file: {e.Message}"
-            );
+            return $"An error occurred while opening the PDF file: {e.Message}";
         }
     }
 }
